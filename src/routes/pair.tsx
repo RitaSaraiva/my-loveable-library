@@ -69,7 +69,7 @@ function PairFlow() {
         />
       )}
 
-      <BottomNav />
+      {stage === "listening" && <BottomNav />}
     </div>
   );
 }
