@@ -1,6 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { BottomNav } from "@/components/BottomNav";
 import { people } from "@/lib/data";
 
 export const Route = createFileRoute("/person/$id")({
@@ -23,7 +22,6 @@ function PersonPage() {
       <h1 className="text-4xl serif text-center mb-2">{p.name}</h1>
       <p className="text-center text-xs tracking-widest uppercase text-muted-foreground mb-8">{p.position}</p>
       <p className="text-sm leading-relaxed text-muted-foreground">{p.bio}</p>
-      <BottomNav />
     </div>
   );
 }

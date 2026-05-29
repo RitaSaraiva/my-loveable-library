@@ -1,6 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, Pause, ChevronRight } from "lucide-react";
-import { BottomNav } from "@/components/BottomNav";
 import { concepts, people, events } from "@/lib/data";
 
 export const Route = createFileRoute("/concept/$id")({
@@ -72,8 +71,6 @@ function ConceptPage() {
           })}
         </div>
       </div>
-
-      <BottomNav />
     </div>
   );
 }

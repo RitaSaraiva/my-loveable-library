@@ -1,6 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { BottomNav } from "@/components/BottomNav";
 import { events } from "@/lib/data";
 
 export const Route = createFileRoute("/event/$id")({
@@ -27,7 +26,6 @@ function EventPage() {
         <p className="text-xs tracking-widest uppercase mb-6" style={{ color: "var(--concept-blue)" }}>{e.position}</p>
         <p className="text-sm leading-relaxed text-muted-foreground">{e.description}</p>
       </div>
-      <BottomNav />
     </div>
   );
 }
