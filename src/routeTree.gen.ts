@@ -13,6 +13,7 @@ import { Route as PairRouteImport } from './routes/pair'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PersonIdRouteImport } from './routes/person.$id'
+import { Route as PairIdRouteImport } from './routes/pair.$id'
 import { Route as EventIdRouteImport } from './routes/event.$id'
 import { Route as ConceptIdRouteImport } from './routes/concept.$id'
 
@@ -36,6 +37,11 @@ const PersonIdRoute = PersonIdRouteImport.update({
   path: '/person/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PairIdRoute = PairIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PairRoute,
+} as any)
 const EventIdRoute = EventIdRouteImport.update({
   id: '/event/$id',
   path: '/event/$id',
@@ -50,26 +56,29 @@ const ConceptIdRoute = ConceptIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/library': typeof LibraryRoute
-  '/pair': typeof PairRoute
+  '/pair': typeof PairRouteWithChildren
   '/concept/$id': typeof ConceptIdRoute
   '/event/$id': typeof EventIdRoute
+  '/pair/$id': typeof PairIdRoute
   '/person/$id': typeof PersonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/library': typeof LibraryRoute
-  '/pair': typeof PairRoute
+  '/pair': typeof PairRouteWithChildren
   '/concept/$id': typeof ConceptIdRoute
   '/event/$id': typeof EventIdRoute
+  '/pair/$id': typeof PairIdRoute
   '/person/$id': typeof PersonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/library': typeof LibraryRoute
-  '/pair': typeof PairRoute
+  '/pair': typeof PairRouteWithChildren
   '/concept/$id': typeof ConceptIdRoute
   '/event/$id': typeof EventIdRoute
+  '/pair/$id': typeof PairIdRoute
   '/person/$id': typeof PersonIdRoute
 }
 export interface FileRouteTypes {
@@ -80,9 +89,17 @@ export interface FileRouteTypes {
     | '/pair'
     | '/concept/$id'
     | '/event/$id'
+    | '/pair/$id'
     | '/person/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/library' | '/pair' | '/concept/$id' | '/event/$id' | '/person/$id'
+  to:
+    | '/'
+    | '/library'
+    | '/pair'
+    | '/concept/$id'
+    | '/event/$id'
+    | '/pair/$id'
+    | '/person/$id'
   id:
     | '__root__'
     | '/'
@@ -90,13 +107,14 @@ export interface FileRouteTypes {
     | '/pair'
     | '/concept/$id'
     | '/event/$id'
+    | '/pair/$id'
     | '/person/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LibraryRoute: typeof LibraryRoute
-  PairRoute: typeof PairRoute
+  PairRoute: typeof PairRouteWithChildren
   ConceptIdRoute: typeof ConceptIdRoute
   EventIdRoute: typeof EventIdRoute
   PersonIdRoute: typeof PersonIdRoute
@@ -132,6 +150,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PersonIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pair/$id': {
+      id: '/pair/$id'
+      path: '/$id'
+      fullPath: '/pair/$id'
+      preLoaderRoute: typeof PairIdRouteImport
+      parentRoute: typeof PairRoute
+    }
     '/event/$id': {
       id: '/event/$id'
       path: '/event/$id'
@@ -149,10 +174,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface PairRouteChildren {
+  PairIdRoute: typeof PairIdRoute
+}
+
+const PairRouteChildren: PairRouteChildren = {
+  PairIdRoute: PairIdRoute,
+}
+
+const PairRouteWithChildren = PairRoute._addFileChildren(PairRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LibraryRoute: LibraryRoute,
-  PairRoute: PairRoute,
+  PairRoute: PairRouteWithChildren,
   ConceptIdRoute: ConceptIdRoute,
   EventIdRoute: EventIdRoute,
   PersonIdRoute: PersonIdRoute,
