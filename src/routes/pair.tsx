@@ -1,9 +1,12 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import blueSvg from "@/assets/blue.svg";
+import greenSvg from "@/assets/green.svg";
+import pinkSvg from "@/assets/pink.svg";
 import { BottomNav } from "@/components/BottomNav";
 import { Blob, TornShape } from "@/components/TornShape";
 import { concepts } from "@/lib/data";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/pair")({ component: PairFlow });
 
@@ -30,10 +33,8 @@ function PairFlow() {
   }, [stage]);
 
   return (
-    <div className="min-h-screen pb-24 px-6 pt-12 relative">
-      {stage === "listening" && (
-        <ListeningScreen onDetect={() => setStage("detected")} />
-      )}
+    <div className="min-h-screen pb-24 px-6 pt-22 relative">
+      {stage === "listening" && <ListeningScreen onDetect={() => setStage("detected")} />}
 
       {stage !== "listening" && (
         <button
@@ -74,14 +75,14 @@ function PairFlow() {
   );
 }
 
-const LISTENING_COLORS = ["blue", "pink", "purple"] as const;
+const LISTENING_SVGS = [blueSvg, pinkSvg, greenSvg] as const;
 
 function ListeningScreen({ onDetect }: { onDetect: () => void }) {
-  const [colorIndex, setColorIndex] = useState(0);
+  const [svgIndex, setSvgIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setColorIndex((prev) => (prev + 1) % LISTENING_COLORS.length);
+      setSvgIndex((prev) => (prev + 1) % LISTENING_SVGS.length);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -97,12 +98,16 @@ function ListeningScreen({ onDetect }: { onDetect: () => void }) {
         className="mx-auto mt-24 relative w-56 h-56 active:scale-95 transition-transform"
         aria-label="Scan"
       >
-        <TornShape color={LISTENING_COLORS[colorIndex]} size={224} />
-        <div className="absolute inset-0 flex items-center justify-center gap-1">
+        <img src={LISTENING_SVGS[svgIndex]} alt="" className="w-full h-full" />
+        {/* <div className="absolute inset-0 flex items-center justify-center gap-1">
           {[12, 28, 18, 32].map((h, i) => (
-            <div key={i} className="w-1.5 bg-black animate-pulse" style={{ height: h, animationDelay: `${i * 0.15}s` }} />
+            <div
+              key={i}
+              className="w-1.5 bg-black animate-pulse"
+              style={{ height: h, animationDelay: `${i * 0.15}s` }}
+            />
           ))}
-        </div>
+        </div> */}
       </button>
       <p className="text-center mt-6 text-xs text-muted-foreground">Tap shape to detect</p>
     </div>
@@ -110,9 +115,14 @@ function ListeningScreen({ onDetect }: { onDetect: () => void }) {
 }
 
 function ConnectScreen({
-  concept, options, stage, selected, onPick, onOpen,
+  concept,
+  options,
+  stage,
+  selected,
+  onPick,
+  onOpen,
 }: {
-  concept: typeof concepts[string];
+  concept: (typeof concepts)[string];
   options: { id: string; color: string; label: string }[];
   stage: Stage;
   selected: string | null;
@@ -121,19 +131,39 @@ function ConnectScreen({
 }) {
   return (
     <div className="min-h-[80vh] flex flex-col">
-      <p className="text-center text-xs tracking-widest uppercase mt-2">Find a compatible concept</p>
+      <p className="text-center text-xs tracking-widest uppercase mt-2">
+        Find a compatible concept
+      </p>
 
       <div className="relative h-72 my-8">
         {/* torn arc strokes */}
         <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 280" fill="none">
-          <path d="M20,140 Q80,60 150,80" stroke="oklch(0.85 0.02 80)" strokeWidth="6" strokeLinecap="round" strokeDasharray="2 4" opacity="0.7" />
-          <path d="M280,160 Q220,90 160,90" stroke="oklch(0.85 0.02 80)" strokeWidth="6" strokeLinecap="round" strokeDasharray="2 4" opacity="0.7" />
+          <path
+            d="M20,140 Q80,60 150,80"
+            stroke="oklch(0.85 0.02 80)"
+            strokeWidth="6"
+            strokeLinecap="round"
+            strokeDasharray="2 4"
+            opacity="0.7"
+          />
+          <path
+            d="M280,160 Q220,90 160,90"
+            stroke="oklch(0.85 0.02 80)"
+            strokeWidth="6"
+            strokeLinecap="round"
+            strokeDasharray="2 4"
+            opacity="0.7"
+          />
         </svg>
 
         {/* center pentagon shows the active concept */}
         {selected && (
           <div className="absolute left-1/2 top-4 -translate-x-1/2 animate-float-in">
-            <TornShape color={options.find(o => o.id === selected)!.color} size={140} label={options.find(o => o.id === selected)!.label} />
+            <TornShape
+              color={options.find((o) => o.id === selected)!.color}
+              size={140}
+              label={options.find((o) => o.id === selected)!.label}
+            />
           </div>
         )}
 
@@ -182,7 +212,9 @@ function ConnectScreen({
       </div>
 
       <div className="mt-auto text-center pb-6">
-        <span className="inline-block border border-border rounded-full px-4 py-1 text-xs tracking-widest uppercase mb-3">1st Concept</span>
+        <span className="inline-block border border-border rounded-full px-4 py-1 text-xs tracking-widest uppercase mb-3">
+          1st Concept
+        </span>
         <h1 className="text-5xl serif mb-4">{concept.name}</h1>
         <p className="text-xs tracking-widest text-muted-foreground uppercase leading-loose max-w-xs mx-auto">
           {concept.description}
