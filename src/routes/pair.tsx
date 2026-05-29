@@ -74,7 +74,18 @@ function PairFlow() {
   );
 }
 
+const LISTENING_COLORS = ["blue", "pink", "purple"] as const;
+
 function ListeningScreen({ onDetect }: { onDetect: () => void }) {
+  const [colorIndex, setColorIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setColorIndex((prev) => (prev + 1) % LISTENING_COLORS.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-[80vh] flex flex-col">
       <h1 className="text-5xl serif mb-3">Listening...</h1>
@@ -86,7 +97,7 @@ function ListeningScreen({ onDetect }: { onDetect: () => void }) {
         className="mx-auto mt-24 relative w-56 h-56 active:scale-95 transition-transform"
         aria-label="Scan"
       >
-        <TornShape color="blue" size={224} />
+        <TornShape color={LISTENING_COLORS[colorIndex]} size={224} />
         <div className="absolute inset-0 flex items-center justify-center gap-1">
           {[12, 28, 18, 32].map((h, i) => (
             <div key={i} className="w-1.5 bg-black animate-pulse" style={{ height: h, animationDelay: `${i * 0.15}s` }} />
