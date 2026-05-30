@@ -3,7 +3,8 @@ import greenSvg from "@/assets/green.svg";
 import pinkSvg from "@/assets/pink.svg";
 import { BottomNav } from "@/components/BottomNav";
 import { Blob, TornShape } from "@/components/TornShape";
-import { concepts } from "@/lib/data";
+import { concepts as allConcepts, getConceptById } from "@/data/concepts";
+import { getPairByConcepts } from "@/data/pairs";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -11,34 +12,59 @@ import { useEffect, useState } from "react";
 export const Route = createFileRoute("/pair")({ component: PairFlow });
 
 type Stage = "listening" | "detected" | "connecting" | "squared";
+type Concept = (typeof allConcepts)[number];
 
 function PairFlow() {
   const [stage, setStage] = useState<Stage>("listening");
-  const navigate = useNavigate();
-  const concept = concepts.liberty;
-
-  // Suggested ball options
-  const options = [
-    { id: "state", color: "blue", label: "State" },
-    { id: "democracy", color: "pink", label: "Democracy" },
-    { id: "authoritarianism", color: "red", label: "Authority" },
-  ];
   const [selected, setSelected] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const concept = getConceptById("capitalism");
+
+  if (!concept) {
+    return <div className="p-8">Concept not found</div>;
+  }
+
+  const options = concept.suggestions
+    .map((suggestionId) => {
+      const suggestedConcept = getConceptById(suggestionId);
+      if (!suggestedConcept) return null;
+
+      const pair = getPairByConcepts(concept.id, suggestedConcept.id);
+
+      return {
+        id: suggestedConcept.id,
+        label: suggestedConcept.name,
+        pairId: pair?.id,
+        color: pair?.color ?? "#79B8EC",
+      };
+    })
+    .filter(Boolean) as {
+    id: string;
+    label: string;
+    pairId?: string;
+    color: string;
+  }[];
 
   useEffect(() => {
     if (stage === "detected") {
-      const t = setTimeout(() => setStage("connecting"), 3000);
-      return () => clearTimeout(t);
+      const timer = setTimeout(() => setStage("connecting"), 3000);
+      return () => clearTimeout(timer);
     }
   }, [stage]);
 
   return (
     <div className="min-h-screen pb-24 px-6 pt-22 relative">
-      {stage === "listening" && <ListeningScreen onDetect={() => setStage("detected")} />}
+      {stage === "listening" && (
+        <ListeningScreen onDetect={() => setStage("detected")} />
+      )}
 
       {stage !== "listening" && (
         <button
-          onClick={() => setStage("listening")}
+          onClick={() => {
+            setStage("listening");
+            setSelected(null);
+          }}
           className="absolute top-12 left-6 w-10 h-10 rounded-full border border-border flex items-center justify-center"
           aria-label="Back"
         >
@@ -48,10 +74,12 @@ function PairFlow() {
 
       {stage === "detected" && (
         <div className="min-h-[80vh] flex flex-col items-center justify-center text-center">
-          <p className="text-xs tracking-widest text-muted-foreground uppercase mb-12">Detected!</p>
+          <p className="text-xs tracking-widest text-muted-foreground uppercase mb-12">
+            Detected!
+          </p>
           <h1 className="text-6xl serif mb-8">{concept.name}</h1>
           <p className="text-xs tracking-widest text-muted-foreground uppercase leading-loose max-w-xs">
-            {concept.description}
+            {concept.definition}
           </p>
         </div>
       )}
@@ -63,10 +91,30 @@ function PairFlow() {
           stage={stage}
           selected={selected}
           onPick={(id) => {
+            if (id === "") {
+              setSelected(null);
+              setStage("connecting");
+              return;
+            }
+
             setSelected(id);
             setStage("squared");
           }}
-          onOpen={(id) => navigate({ to: "/concept/$id", params: { id } })}
+          onOpen={(id) => {
+            const option = options.find((item) => item.id === id);
+
+            if (option?.pairId) {
+              navigate({
+                to: "/pair-detail/$id",
+                params: { id: option.pairId },
+              });
+            } else {
+              navigate({
+                to: "/concept/$id",
+                params: { id },
+              });
+            }
+          }}
         />
       )}
 
@@ -84,6 +132,7 @@ function ListeningScreen({ onDetect }: { onDetect: () => void }) {
     const interval = setInterval(() => {
       setSvgIndex((prev) => (prev + 1) % LISTENING_SVGS.length);
     }, 3000);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -93,23 +142,18 @@ function ListeningScreen({ onDetect }: { onDetect: () => void }) {
       <p className="text-xs tracking-widest text-muted-foreground uppercase max-w-xs">
         Try scanning a political concept on the base of the device
       </p>
+
       <button
         onClick={onDetect}
         className="mx-auto mt-24 relative w-56 h-56 active:scale-95 transition-transform"
         aria-label="Scan"
       >
         <img src={LISTENING_SVGS[svgIndex]} alt="" className="w-full h-full" />
-        {/* <div className="absolute inset-0 flex items-center justify-center gap-1">
-          {[12, 28, 18, 32].map((h, i) => (
-            <div
-              key={i}
-              className="w-1.5 bg-black animate-pulse"
-              style={{ height: h, animationDelay: `${i * 0.15}s` }}
-            />
-          ))}
-        </div> */}
       </button>
-      <p className="text-center mt-6 text-xs text-muted-foreground">Tap shape to detect</p>
+
+      <p className="text-center mt-6 text-xs text-muted-foreground">
+        Tap shape to detect
+      </p>
     </div>
   );
 }
@@ -122,8 +166,8 @@ function ConnectScreen({
   onPick,
   onOpen,
 }: {
-  concept: (typeof concepts)[string];
-  options: { id: string; color: string; label: string }[];
+  concept: Concept;
+  options: { id: string; color: string; label: string; pairId?: string }[];
   stage: Stage;
   selected: string | null;
   onPick: (id: string) => void;
@@ -135,9 +179,19 @@ function ConnectScreen({
         Find a compatible concept
       </p>
 
-      <div className="relative h-72 my-8">
-        {/* torn arc strokes */}
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 280" fill="none">
+      <div
+        className="relative h-72 my-8"
+        onClick={() => {
+          if (stage === "squared") {
+            onPick("");
+          }
+        }}
+      >
+        <svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 300 280"
+          fill="none"
+        >
           <path
             d="M20,140 Q80,60 150,80"
             stroke="oklch(0.85 0.02 80)"
@@ -156,55 +210,33 @@ function ConnectScreen({
           />
         </svg>
 
-        {/* center pentagon shows the active concept */}
-        {selected && (
-          <div className="absolute left-1/2 top-4 -translate-x-1/2 animate-float-in">
-            <TornShape
-              color={options.find((o) => o.id === selected)!.color}
-              size={140}
-              label={options.find((o) => o.id === selected)!.label}
-            />
-          </div>
-        )}
-
-        {/* balls/squares */}
         <div className="absolute inset-0 flex items-end justify-around pb-4">
-          {options.map((o, i) => {
-            const isSelected = selected === o.id;
-            // when squared and one is selected, hide non-selected
-            if (stage === "squared" && !isSelected) {
-              return (
-                <button
-                  key={o.id}
-                  onClick={() => onPick(o.id)}
-                  className="opacity-30"
-                  aria-label={`Pick ${o.label}`}
-                >
-                  <Blob color={o.color} size={50} />
-                </button>
-              );
-            }
-            if (isSelected) {
-              return (
-                <button
-                  key={o.id}
-                  onClick={() => onOpen(concept.id)}
-                  className="animate-float-in"
-                  aria-label={`Open ${o.label}`}
-                >
-                  <TornShape color={o.color} size={88} label={o.label} square />
-                </button>
-              );
-            }
+          {options.map((option) => {
+            const isSelected = selected === option.id;
+
             return (
               <button
-                key={o.id}
-                onClick={() => onPick(o.id)}
-                className="animate-float-in active:scale-90 transition-transform"
-                style={{ animationDelay: `${i * 0.15}s` }}
-                aria-label={`Pick ${o.label}`}
+                key={option.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  if (isSelected) {
+                    onOpen(option.id);
+                  } else {
+                    onPick(option.id);
+                  }
+                }}
+                className="transition-all duration-300"
               >
-                <Blob color={o.color} size={64} />
+                {isSelected ? (
+                  <TornShape
+                    color={option.color}
+                    size={140}
+                    label={option.label}
+                  />
+                ) : (
+                  <Blob color={option.color} size={60} />
+                )}
               </button>
             );
           })}
@@ -215,9 +247,11 @@ function ConnectScreen({
         <span className="inline-block border border-border rounded-full px-4 py-1 text-xs tracking-widest uppercase mb-3">
           1st Concept
         </span>
+
         <h1 className="text-5xl serif mb-4">{concept.name}</h1>
+
         <p className="text-xs tracking-widest text-muted-foreground uppercase leading-loose max-w-xs mx-auto">
-          {concept.description}
+          {concept.definition}
         </p>
       </div>
     </div>
