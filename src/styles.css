@@ -143,3 +143,58 @@
 .animate-loader-color {
   animation: loader-color 12s ease-in-out infinite;
 }
+
+@keyframes slow-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-slow-spin {
+  animation: slow-spin 8s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes loader-color {
+  0% {
+    background-color: #79b8ec;
+  }
+
+  16.6% {
+    background-color: #e351a6;
+  }
+
+  33.2% {
+    background-color: #58be69;
+  }
+
+  49.8% {
+    background-color: #5843dd;
+  }
+
+  66.4% {
+    background-color: #ec3832;
+  }
+
+  83% {
+    background-color: #f2cc50;
+  }
+
+  100% {
+    background-color: #79b8ec;
+  }
+}
+
+.animate-loader-color {
+  animation:
+    slow-spin 8s linear infinite,
+    loader-color 12s ease-in-out infinite;
+}
+
+.animate-slow-spin {
+  animation: slow-spin 20s linear infinite;
+}

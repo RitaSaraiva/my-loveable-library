@@ -4,6 +4,7 @@ import twoRightLine from "@/assets/lines/two-right.svg";
 import threeLeftLine from "@/assets/lines/three-left.svg";
 import threeTopLine from "@/assets/lines/three-top.svg";
 import threeRightLine from "@/assets/lines/three-right.svg";
+import loaderSvg from "@/assets/loader.svg";
 
 import { BottomNav } from "@/components/BottomNav";
 import { Blob, TornShape } from "@/components/TornShape";
@@ -148,30 +149,64 @@ function ListeningScreen({ onDetect }: { onDetect: () => void }) {
 function ListeningPentagon() {
   return (
     <div className="relative w-full h-full">
-      <div
-        className="absolute inset-0 animate-slow-spin animate-loader-color"
-        style={{
-          maskImage: "url('/src/assets/loader.svg')",
-          WebkitMaskImage: "url('/src/assets/loader.svg')",
-          maskSize: "contain",
-          WebkitMaskSize: "contain",
-          maskRepeat: "no-repeat",
-          WebkitMaskRepeat: "no-repeat",
-          maskPosition: "center",
-          WebkitMaskPosition: "center",
-        }}
-      />
 
+      {/* ROTATING PENTAGON */}
+      <div
+  className="absolute inset-0 animate-loader-color"
+  style={{
+    backgroundColor: "#79B8EC",
+    maskImage: `url(${loaderSvg})`,
+    WebkitMaskImage: `url(${loaderSvg})`,
+    maskSize: "contain",
+    WebkitMaskSize: "contain",
+    maskRepeat: "no-repeat",
+    WebkitMaskRepeat: "no-repeat",
+    maskPosition: "center",
+    WebkitMaskPosition: "center",
+  }}
+/>
+
+      {/* STATIC STROKES */}
       <svg
         viewBox="0 0 100 100"
         className="absolute inset-0 w-full h-full pointer-events-none"
       >
         <g stroke="black" strokeWidth="5" strokeLinecap="round" fill="none">
-          <line x1="28" y1="48" x2="28" y2="58" className="listening-stroke listening-stroke-1" />
-          <line x1="40" y1="38" x2="40" y2="68" className="listening-stroke listening-stroke-2" />
-          <line x1="52" y1="44" x2="52" y2="62" className="listening-stroke listening-stroke-3" />
-          <line x1="64" y1="32" x2="64" y2="74" className="listening-stroke listening-stroke-4" />
-          <line x1="76" y1="48" x2="76" y2="58" className="listening-stroke listening-stroke-5" />
+          <line
+            x1="28"
+            y1="48"
+            x2="28"
+            y2="58"
+            className="listening-stroke listening-stroke-1"
+          />
+          <line
+            x1="40"
+            y1="38"
+            x2="40"
+            y2="68"
+            className="listening-stroke listening-stroke-2"
+          />
+          <line
+            x1="52"
+            y1="44"
+            x2="52"
+            y2="62"
+            className="listening-stroke listening-stroke-3"
+          />
+          <line
+            x1="64"
+            y1="32"
+            x2="64"
+            y2="74"
+            className="listening-stroke listening-stroke-4"
+          />
+          <line
+            x1="76"
+            y1="48"
+            x2="76"
+            y2="58"
+            className="listening-stroke listening-stroke-5"
+          />
         </g>
       </svg>
     </div>
