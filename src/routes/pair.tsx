@@ -27,7 +27,7 @@ function PairFlow() {
   const [selected, setSelected] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const concept = getConceptById("liberalism");
+  const concept = getConceptById("capitalism");
 
   if (!concept) return <div className="p-8">Concept not found</div>;
 
@@ -169,7 +169,7 @@ function getSuggestionLayout(count: number) {
     return [
       {
         x: "50%",
-        y: "42%",
+        y: "50%",
         line: oneRightLine,
         lineClass: "absolute left-[52%] top-[10%] w-[205px]",
       },
@@ -179,40 +179,40 @@ function getSuggestionLayout(count: number) {
   if (count === 2) {
     return [
       {
-  x: "22%",
-  y: "28%",
+  x: "25%",
+  y: "25%",
   line: twoLeftLine,
-  lineClass: "absolute left-[2%] top-[23%] w-[88px]",
+  lineClass: "absolute left-[-15%] top-[23%] w-[99px]",
 },
       {
-        x: "68%",
-        y: "45%",
+        x: "55%",
+        y: "85%",
         line: twoRightLine,
-        lineClass: "absolute left-[66%] top-[40%] w-[130px]",
+        lineClass: "absolute left-[66%] top-[80%] w-[190px]",
       },
     ];
   }
 
   return [
-    {
-  x: "22%",
-  y: "46%",
-  line: threeLeftLine,
-  lineClass: "absolute left-[0%] top-[38%] w-[95px]",
-},
-    {
-      x: "50%",
-      y: "30%",
-      line: threeTopLine,
-      lineClass: "absolute left-[46%] top-[14%] w-[165px]",
-    },
-    {
-      x: "78%",
-      y: "46%",
-      line: threeRightLine,
-      lineClass: "absolute left-[79%] top-[42%] w-[105px]",
-    },
-  ];
+  {
+    x: "14%",
+    y: "80%",
+    line: threeLeftLine,
+    lineClass: "absolute left-[-10%] top-[39%] w-[92px]",
+  },
+  {
+    x: "50%",
+    y: "38%",
+    line: threeTopLine,
+    lineClass: "absolute left-[60%] top-[15%] w-[250px]",
+  },
+  {
+    x: "76%",
+    y: "76%",
+    line: threeRightLine,
+    lineClass: "absolute left-[85%] top-[80%] w-[120px]",
+  },
+];
 }
 
 function ConnectScreen({
@@ -251,10 +251,10 @@ function ConnectScreen({
           return (
             <div key={option.id}>
               <img
-                src={position.line}
-                alt=""
-                className={`${position.lineClass} pointer-events-none select-none`}
-              />
+  src={position.line}
+  alt=""
+  className={`${position.lineClass} pointer-events-none select-none z-20`}
+/>
 
               <button
                 onClick={(e) => {
@@ -266,7 +266,7 @@ function ConnectScreen({
                     onPick(option.id);
                   }
                 }}
-                className="absolute transition-all duration-300 active:scale-95"
+                className="absolute transition-all duration-300 active:scale-95 z-10"
                 style={{
                   left: position.x,
                   top: position.y,
