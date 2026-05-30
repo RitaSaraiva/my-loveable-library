@@ -1,7 +1,3 @@
-import blueSvg from "@/assets/blue.svg";
-import greenSvg from "@/assets/green.svg";
-import pinkSvg from "@/assets/pink.svg";
-
 import oneRightLine from "@/assets/lines/one-right.svg";
 import twoLeftLine from "@/assets/lines/two-left.svg";
 import twoRightLine from "@/assets/lines/two-right.svg";
@@ -129,23 +125,12 @@ function PairFlow() {
   );
 }
 
-const LISTENING_SVGS = [blueSvg, pinkSvg, greenSvg] as const;
-
 function ListeningScreen({ onDetect }: { onDetect: () => void }) {
-  const [svgIndex, setSvgIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSvgIndex((prev) => (prev + 1) % LISTENING_SVGS.length);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="min-h-[80vh] flex flex-col">
       <h1 className="text-5xl serif mb-3">Listening...</h1>
-      <p className="text-xs tracking-widest text-muted-foreground uppercase max-w-xs">
+
+      <p className="text-xs tracking-widest text-muted-foreground uppercase max-w-xs leading-relaxed">
         Try scanning a political concept on the base of the device
       </p>
 
@@ -154,12 +139,41 @@ function ListeningScreen({ onDetect }: { onDetect: () => void }) {
         className="mx-auto mt-24 relative w-56 h-56 active:scale-95 transition-transform"
         aria-label="Scan"
       >
-        <img src={LISTENING_SVGS[svgIndex]} alt="" className="w-full h-full" />
+        <ListeningPentagon />
       </button>
+    </div>
+  );
+}
 
-      <p className="text-center mt-6 text-xs text-muted-foreground">
-        Tap shape to detect
-      </p>
+function ListeningPentagon() {
+  return (
+    <div className="relative w-full h-full">
+      <div
+        className="absolute inset-0 animate-slow-spin animate-loader-color"
+        style={{
+          maskImage: "url('/src/assets/loader.svg')",
+          WebkitMaskImage: "url('/src/assets/loader.svg')",
+          maskSize: "contain",
+          WebkitMaskSize: "contain",
+          maskRepeat: "no-repeat",
+          WebkitMaskRepeat: "no-repeat",
+          maskPosition: "center",
+          WebkitMaskPosition: "center",
+        }}
+      />
+
+      <svg
+        viewBox="0 0 100 100"
+        className="absolute inset-0 w-full h-full pointer-events-none"
+      >
+        <g stroke="black" strokeWidth="5" strokeLinecap="round" fill="none">
+          <line x1="28" y1="48" x2="28" y2="58" className="listening-stroke listening-stroke-1" />
+          <line x1="40" y1="38" x2="40" y2="68" className="listening-stroke listening-stroke-2" />
+          <line x1="52" y1="44" x2="52" y2="62" className="listening-stroke listening-stroke-3" />
+          <line x1="64" y1="32" x2="64" y2="74" className="listening-stroke listening-stroke-4" />
+          <line x1="76" y1="48" x2="76" y2="58" className="listening-stroke listening-stroke-5" />
+        </g>
+      </svg>
     </div>
   );
 }
@@ -179,11 +193,11 @@ function getSuggestionLayout(count: number) {
   if (count === 2) {
     return [
       {
-  x: "25%",
-  y: "25%",
-  line: twoLeftLine,
-  lineClass: "absolute left-[-15%] top-[23%] w-[99px]",
-},
+        x: "25%",
+        y: "25%",
+        line: twoLeftLine,
+        lineClass: "absolute left-[-15%] top-[23%] w-[99px]",
+      },
       {
         x: "55%",
         y: "85%",
@@ -194,25 +208,25 @@ function getSuggestionLayout(count: number) {
   }
 
   return [
-  {
-    x: "14%",
-    y: "80%",
-    line: threeLeftLine,
-    lineClass: "absolute left-[-10%] top-[39%] w-[92px]",
-  },
-  {
-    x: "50%",
-    y: "38%",
-    line: threeTopLine,
-    lineClass: "absolute left-[60%] top-[15%] w-[250px]",
-  },
-  {
-    x: "76%",
-    y: "76%",
-    line: threeRightLine,
-    lineClass: "absolute left-[85%] top-[80%] w-[120px]",
-  },
-];
+    {
+      x: "14%",
+      y: "80%",
+      line: threeLeftLine,
+      lineClass: "absolute left-[-10%] top-[39%] w-[92px]",
+    },
+    {
+      x: "50%",
+      y: "38%",
+      line: threeTopLine,
+      lineClass: "absolute left-[60%] top-[15%] w-[250px]",
+    },
+    {
+      x: "76%",
+      y: "76%",
+      line: threeRightLine,
+      lineClass: "absolute left-[85%] top-[80%] w-[120px]",
+    },
+  ];
 }
 
 function ConnectScreen({
@@ -251,10 +265,10 @@ function ConnectScreen({
           return (
             <div key={option.id}>
               <img
-  src={position.line}
-  alt=""
-  className={`${position.lineClass} pointer-events-none select-none z-20`}
-/>
+                src={position.line}
+                alt=""
+                className={`${position.lineClass} pointer-events-none select-none z-20`}
+              />
 
               <button
                 onClick={(e) => {
@@ -274,7 +288,11 @@ function ConnectScreen({
                 }}
               >
                 {isSelected ? (
-                  <TornShape color={option.color} size={160} label={option.label} />
+                  <TornShape
+                    color={option.color}
+                    size={160}
+                    label={option.label}
+                  />
                 ) : (
                   <Blob color={option.color} size={62} />
                 )}
