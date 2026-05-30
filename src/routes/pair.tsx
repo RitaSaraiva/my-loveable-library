@@ -174,21 +174,21 @@ function ConnectScreen({
   onOpen: (id: string) => void;
 }) {
   return (
-    <div className="min-h-[80vh] flex flex-col">
+    <div
+      className="min-h-[80vh] flex flex-col"
+      onClick={() => {
+        if (stage === "squared") {
+          onPick("");
+        }
+      }}
+    >
       <p className="text-center text-xs tracking-widest uppercase mt-2">
         Find a compatible concept
       </p>
 
-      <div
-        className="relative h-72 my-8"
-        onClick={() => {
-          if (stage === "squared") {
-            onPick("");
-          }
-        }}
-      >
+      <div className="relative h-72 my-8">
         <svg
-          className="absolute inset-0 w-full h-full"
+          className="absolute inset-0 w-full h-full pointer-events-none"
           viewBox="0 0 300 280"
           fill="none"
         >
@@ -226,16 +226,12 @@ function ConnectScreen({
                     onPick(option.id);
                   }
                 }}
-                className="transition-all duration-300"
+                className="transition-all duration-300 active:scale-95"
               >
                 {isSelected ? (
-                  <TornShape
-                    color={option.color}
-                    size={140}
-                    label={option.label}
-                  />
+                  <TornShape color={option.color} size={120} label={option.label} />
                 ) : (
-                  <Blob color={option.color} size={60} />
+                  <Blob color={option.color} size={62} />
                 )}
               </button>
             );
