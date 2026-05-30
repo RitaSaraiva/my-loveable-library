@@ -14,9 +14,15 @@ import {
   getConceptByUid,
 } from "@/data/concepts";
 import { getPairByConcepts } from "@/data/pairs";
+import {
+  connectArduino as connectArduinoSerial,
+  isArduinoConnected,
+  onArduinoTag,
+  sendArduinoCommand,
+} from "@/lib/arduinoSerial";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/pair")({ component: PairFlow });
 
@@ -26,56 +32,67 @@ type Concept = (typeof allConcepts)[number];
 function PairFlow() {
   const [stage, setStage] = useState<Stage>("listening");
   const [selected, setSelected] = useState<string | null>(null);
-  const [arduinoConnected, setArduinoConnected] = useState(false);
+  const [arduinoConnected, setArduinoConnected] = useState(isArduinoConnected());
   const [scannedConceptId, setScannedConceptId] = useState<string | null>(null);
 
+  const firstConceptRef = useRef<string | null>(null);
   const navigate = useNavigate();
 
-  async function connectArduino() {
+  async function handleConnectArduino() {
     try {
-      const port = await (navigator as any).serial.requestPort();
-      await port.open({ baudRate: 9600 });
-
-      setArduinoConnected(true);
-
-      const decoder = new TextDecoderStream();
-      port.readable.pipeTo(decoder.writable);
-
-      const reader = decoder.readable.getReader();
-      let buffer = "";
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        if (!value) continue;
-
-        buffer += value;
-
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
-
-        for (const line of lines) {
-          const cleanLine = line.trim();
-          console.log("SERIAL:", cleanLine);
-
-          if (cleanLine.startsWith("TAG:")) {
-            const uid = cleanLine.replace("TAG:", "").trim();
-            const scannedConcept = getConceptByUid(uid);
-
-            if (scannedConcept) {
-              setScannedConceptId(scannedConcept.id);
-              setSelected(null);
-              setStage("detected");
-            } else {
-              console.log("Unknown UID:", uid);
-            }
-          }
-        }
-      }
+      await connectArduinoSerial();
+      setArduinoConnected(isArduinoConnected());
     } catch (error) {
       console.error("Arduino connection failed:", error);
     }
   }
+
+  useEffect(() => {
+    const unsubscribe = onArduinoTag(async (uid) => {
+      const scannedConcept = getConceptByUid(uid);
+
+      if (!scannedConcept) {
+        console.log("Unknown UID:", uid);
+        await sendArduinoCommand("ERROR");
+        return;
+      }
+
+      const firstConceptId = firstConceptRef.current;
+
+      if (!firstConceptId) {
+        firstConceptRef.current = scannedConcept.id;
+        setScannedConceptId(scannedConcept.id);
+        setSelected(null);
+        setStage("detected");
+        return;
+      }
+
+      if (firstConceptId === scannedConcept.id) {
+        return;
+      }
+
+      const pair = getPairByConcepts(firstConceptId, scannedConcept.id);
+
+      if (pair) {
+        await sendArduinoCommand("SUCCESS");
+
+        firstConceptRef.current = null;
+        setScannedConceptId(null);
+        setSelected(null);
+        setStage("listening");
+
+        navigate({
+          to: "/pair-detail/$id",
+          params: { id: pair.id },
+        });
+      } else {
+        await sendArduinoCommand("ERROR");
+        setStage("connecting");
+      }
+    });
+
+    return unsubscribe;
+  }, [navigate]);
 
   const concept = getConceptById(scannedConceptId ?? "capitalism");
 
@@ -109,22 +126,26 @@ function PairFlow() {
     }
   }, [stage]);
 
+  function resetToListening() {
+    firstConceptRef.current = null;
+    setScannedConceptId(null);
+    setStage("listening");
+    setSelected(null);
+  }
+
   return (
     <div className="min-h-screen pb-24 px-6 pt-22 relative">
       {stage === "listening" && (
         <ListeningScreen
           onDetect={() => setStage("detected")}
-          onConnectArduino={connectArduino}
+          onConnectArduino={handleConnectArduino}
           arduinoConnected={arduinoConnected}
         />
       )}
 
       {stage !== "listening" && (
         <button
-          onClick={() => {
-            setStage("listening");
-            setSelected(null);
-          }}
+          onClick={resetToListening}
           className="absolute top-12 left-6 w-10 h-10 rounded-full border border-border flex items-center justify-center"
           aria-label="Back"
         >
@@ -164,6 +185,11 @@ function PairFlow() {
             const option = options.find((item) => item.id === id);
 
             if (option?.pairId) {
+              firstConceptRef.current = null;
+              setScannedConceptId(null);
+              setSelected(null);
+              setStage("listening");
+
               navigate({
                 to: "/pair-detail/$id",
                 params: { id: option.pairId },
