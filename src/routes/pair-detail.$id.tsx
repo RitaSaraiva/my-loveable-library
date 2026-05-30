@@ -2,6 +2,12 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import { discoverPair } from "@/lib/discovery";
+import {
+  pauseAudio,
+  resumeAudio,
+  replayAudio,
+  getCurrentAudio,
+} from "@/lib/audio";
 
 import titleShape from "@/assets/pair-detail/title-shape.svg";
 import contentShape from "@/assets/pair-detail/content-shape.svg";
@@ -63,7 +69,24 @@ function PairDetailPage() {
               </h1>
 
               <button
-                onClick={() => setPlaying((value) => !value)}
+                onClick={() => {
+  const audio = getCurrentAudio();
+
+  if (playing) {
+    pauseAudio();
+    setPlaying(false);
+    return;
+  }
+
+  if (!audio || audio.ended) {
+    replayAudio();
+  } else {
+    resumeAudio();
+  }
+
+  setPlaying(true);
+}}
+
                 className="w-16 h-16 rounded-full flex items-center justify-center shrink-0 mr-12"
                 style={{
                   backgroundColor: playing ? pair.color : "transparent",

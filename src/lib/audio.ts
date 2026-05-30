@@ -1,4 +1,5 @@
 let currentAudio: HTMLAudioElement | null = null;
+let currentSrc: string | null = null;
 
 export function stopAudio() {
   if (!currentAudio) return;
@@ -6,17 +7,49 @@ export function stopAudio() {
   currentAudio.pause();
   currentAudio.currentTime = 0;
   currentAudio = null;
+  currentSrc = null;
 }
 
 export function playAudio(src: string) {
   stopAudio();
 
+  currentSrc = src;
   currentAudio = new Audio(src);
 
   currentAudio.play().catch((error) => {
     console.error("Audio failed:", error);
   });
 
+  return currentAudio;
+}
+
+export function pauseAudio() {
+  if (!currentAudio) return;
+  currentAudio.pause();
+}
+
+export function resumeAudio() {
+  if (!currentAudio) return;
+  currentAudio.play().catch((error) => {
+    console.error("Audio failed:", error);
+  });
+}
+
+export function replayAudio() {
+  if (!currentAudio && currentSrc) {
+    playAudio(currentSrc);
+    return;
+  }
+
+  if (!currentAudio) return;
+
+  currentAudio.currentTime = 0;
+  currentAudio.play().catch((error) => {
+    console.error("Audio failed:", error);
+  });
+}
+
+export function getCurrentAudio() {
   return currentAudio;
 }
 
