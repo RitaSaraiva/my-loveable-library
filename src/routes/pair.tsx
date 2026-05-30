@@ -5,6 +5,11 @@ import threeLeftLine from "@/assets/lines/three-left.svg";
 import threeTopLine from "@/assets/lines/three-top.svg";
 import threeRightLine from "@/assets/lines/three-right.svg";
 import loaderSvg from "@/assets/loader.svg";
+import {
+  playConceptAudio,
+  playPairAudio,
+  playScanAnotherConceptAudio,
+} from "@/lib/audio";
 
 import { BottomNav } from "@/components/BottomNav";
 import { Blob, TornShape } from "@/components/TornShape";
@@ -60,12 +65,21 @@ function PairFlow() {
       const firstConceptId = firstConceptRef.current;
 
       if (!firstConceptId) {
-        firstConceptRef.current = scannedConcept.id;
-        setScannedConceptId(scannedConcept.id);
-        setSelected(null);
-        setStage("detected");
-        return;
-      }
+  firstConceptRef.current = scannedConcept.id;
+  setScannedConceptId(scannedConcept.id);
+  setSelected(null);
+  setStage("detected");
+
+  playConceptAudio(scannedConcept.id);
+
+  setTimeout(() => {
+    if (firstConceptRef.current === scannedConcept.id) {
+      playScanAnotherConceptAudio();
+    }
+  }, 10000);
+
+  return;
+}
 
       if (firstConceptId === scannedConcept.id) {
         return;
@@ -74,18 +88,20 @@ function PairFlow() {
       const pair = getPairByConcepts(firstConceptId, scannedConcept.id);
 
       if (pair) {
-        await sendArduinoCommand("SUCCESS");
+  await sendArduinoCommand("SUCCESS");
 
-        firstConceptRef.current = null;
-        setScannedConceptId(null);
-        setSelected(null);
-        setStage("listening");
+  playPairAudio(pair.id);
 
-        navigate({
-          to: "/pair-detail/$id",
-          params: { id: pair.id },
-        });
-      } else {
+  firstConceptRef.current = null;
+  setScannedConceptId(null);
+  setSelected(null);
+  setStage("listening");
+
+  navigate({
+    to: "/pair-detail/$id",
+    params: { id: pair.id },
+  });
+} else {
         await sendArduinoCommand("ERROR");
         setStage("connecting");
       }
