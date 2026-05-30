@@ -1,6 +1,14 @@
 import blueSvg from "@/assets/blue.svg";
 import greenSvg from "@/assets/green.svg";
 import pinkSvg from "@/assets/pink.svg";
+
+import oneRightLine from "@/assets/lines/one-right.svg";
+import twoLeftLine from "@/assets/lines/two-left.svg";
+import twoRightLine from "@/assets/lines/two-right.svg";
+import threeLeftLine from "@/assets/lines/three-left.svg";
+import threeTopLine from "@/assets/lines/three-top.svg";
+import threeRightLine from "@/assets/lines/three-right.svg";
+
 import { BottomNav } from "@/components/BottomNav";
 import { Blob, TornShape } from "@/components/TornShape";
 import { concepts as allConcepts, getConceptById } from "@/data/concepts";
@@ -19,11 +27,9 @@ function PairFlow() {
   const [selected, setSelected] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const concept = getConceptById("capitalism");
+  const concept = getConceptById("liberalism");
 
-  if (!concept) {
-    return <div className="p-8">Concept not found</div>;
-  }
+  if (!concept) return <div className="p-8">Concept not found</div>;
 
   const options = concept.suggestions
     .map((suggestionId) => {
@@ -158,6 +164,57 @@ function ListeningScreen({ onDetect }: { onDetect: () => void }) {
   );
 }
 
+function getSuggestionLayout(count: number) {
+  if (count === 1) {
+    return [
+      {
+        x: "50%",
+        y: "42%",
+        line: oneRightLine,
+        lineClass: "absolute left-[52%] top-[10%] w-[205px]",
+      },
+    ];
+  }
+
+  if (count === 2) {
+    return [
+      {
+  x: "22%",
+  y: "28%",
+  line: twoLeftLine,
+  lineClass: "absolute left-[2%] top-[23%] w-[88px]",
+},
+      {
+        x: "68%",
+        y: "45%",
+        line: twoRightLine,
+        lineClass: "absolute left-[66%] top-[40%] w-[130px]",
+      },
+    ];
+  }
+
+  return [
+    {
+  x: "22%",
+  y: "46%",
+  line: threeLeftLine,
+  lineClass: "absolute left-[0%] top-[38%] w-[95px]",
+},
+    {
+      x: "50%",
+      y: "30%",
+      line: threeTopLine,
+      lineClass: "absolute left-[46%] top-[14%] w-[165px]",
+    },
+    {
+      x: "78%",
+      y: "46%",
+      line: threeRightLine,
+      lineClass: "absolute left-[79%] top-[42%] w-[105px]",
+    },
+  ];
+}
+
 function ConnectScreen({
   concept,
   options,
@@ -173,50 +230,33 @@ function ConnectScreen({
   onPick: (id: string) => void;
   onOpen: (id: string) => void;
 }) {
+  const layout = getSuggestionLayout(options.length);
+
   return (
     <div
       className="min-h-[80vh] flex flex-col"
       onClick={() => {
-        if (stage === "squared") {
-          onPick("");
-        }
+        if (stage === "squared") onPick("");
       }}
     >
-      <p className="text-center text-xs tracking-widest uppercase mt-2">
+      <p className="text-center text-xs tracking-widest uppercase mt-2 text-[#F9F6EC]">
         Find a compatible concept
       </p>
 
-      <div className="relative h-72 my-8">
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none"
-          viewBox="0 0 300 280"
-          fill="none"
-        >
-          <path
-            d="M20,140 Q80,60 150,80"
-            stroke="oklch(0.85 0.02 80)"
-            strokeWidth="6"
-            strokeLinecap="round"
-            strokeDasharray="2 4"
-            opacity="0.7"
-          />
-          <path
-            d="M280,160 Q220,90 160,90"
-            stroke="oklch(0.85 0.02 80)"
-            strokeWidth="6"
-            strokeLinecap="round"
-            strokeDasharray="2 4"
-            opacity="0.7"
-          />
-        </svg>
+      <div className="relative h-80 my-8 overflow-visible">
+        {options.map((option, index) => {
+          const position = layout[index];
+          const isSelected = selected === option.id;
 
-        <div className="absolute inset-0 flex items-end justify-around pb-4">
-          {options.map((option) => {
-            const isSelected = selected === option.id;
+          return (
+            <div key={option.id}>
+              <img
+                src={position.line}
+                alt=""
+                className={`${position.lineClass} pointer-events-none select-none`}
+              />
 
-            return (
               <button
-                key={option.id}
                 onClick={(e) => {
                   e.stopPropagation();
 
@@ -226,27 +266,32 @@ function ConnectScreen({
                     onPick(option.id);
                   }
                 }}
-                className="transition-all duration-300 active:scale-95"
+                className="absolute transition-all duration-300 active:scale-95"
+                style={{
+                  left: position.x,
+                  top: position.y,
+                  transform: "translate(-50%, -50%)",
+                }}
               >
                 {isSelected ? (
-                  <TornShape color={option.color} size={120} label={option.label} />
+                  <TornShape color={option.color} size={150} label={option.label} />
                 ) : (
                   <Blob color={option.color} size={62} />
                 )}
               </button>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="mt-auto text-center pb-6">
-        <span className="inline-block border border-border rounded-full px-4 py-1 text-xs tracking-widest uppercase mb-3">
+        <span className="inline-block border border-border rounded-full px-4 py-1 text-xs tracking-widest uppercase mb-3 text-[#F9F6EC]">
           1st Concept
         </span>
 
-        <h1 className="text-5xl serif mb-4">{concept.name}</h1>
+        <h1 className="text-5xl serif mb-4 text-[#F9F6EC]">{concept.name}</h1>
 
-        <p className="text-xs tracking-widest text-muted-foreground uppercase leading-loose max-w-xs mx-auto">
+        <p className="text-xs tracking-widest uppercase leading-loose max-w-xs mx-auto text-[#C5C5C5]">
           {concept.definition}
         </p>
       </div>
