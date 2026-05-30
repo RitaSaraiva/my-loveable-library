@@ -1,10 +1,23 @@
+import industrialRevolutionImage from "@/assets/events/industrial-revolution.jpg";
+import americanRevolutionImage from "@/assets/events/american-revolution.jpg";
+import chineseEconomicReformImage from "@/assets/events/chinese-economic-reform.jpg";
+import chileanCoupImage from "@/assets/events/chilean-coup.jpg";
+import nhsCreationImage from "@/assets/events/nhs-creation.jpg.avif";
+import beveridgeReportImage from "@/assets/events/beveridge-report.jpg";
+import cubanRevolutionImage from "@/assets/events/cuban-revolution.jpg";
+import pragueSpringImage from "@/assets/events/prague-spring.jpg";
+import thatcherismImage from "@/assets/events/tatcherism.webp";
+import reaganomicsImage from "@/assets/events/reaganomics.jpg";
+import parisCommuneImage from "@/assets/events/paris-commune.jpg";
+import endOfApartheidImage from "@/assets/events/end-of-apartheid.jpg";
+
 export const events = [
   {
     id: "industrial-revolution",
     name: "Industrial Revolution",
     date: "1800s",
     color: "#79B8EC",
-    image: "/images/events/industrial-revolution.jpg",
+    image: industrialRevolutionImage,
     explanation:
       "The Industrial Revolution transformed economies through large-scale industry, mechanized manufacturing, factories, new technologies, and expanding trade networks. It helped establish modern capitalist economies and grew alongside liberal movements for rights and representative government.",
   },
@@ -13,7 +26,7 @@ export const events = [
     name: "American Revolution",
     date: "1775",
     color: "#79B8EC",
-    image: "/images/events/american-revolution.jpg",
+    image: americanRevolutionImage,
     explanation:
       "The American Revolution drew on liberal ideas about individual rights, consent of the governed, and limited government. The new political system also protected private property and encouraged economic freedom.",
   },
@@ -22,7 +35,7 @@ export const events = [
     name: "Chinese Economic Reform",
     date: "1978",
     color: "#EC3832",
-    image: "/images/events/chinese-economic-reform.jpg",
+    image: chineseEconomicReformImage,
     explanation:
       "Beginning in 1978, China introduced reforms that moved it away from a strictly planned economy. Private businesses emerged, farmers gained more control over production, and international trade expanded, all while political control remained centralized.",
   },
@@ -31,7 +44,7 @@ export const events = [
     name: "Chilean Coup",
     date: "1973",
     color: "#EC3832",
-    image: "/images/events/chilean-coup.jpg",
+    image: chileanCoupImage,
     explanation:
       "The Chilean Coup overthrew Salvador Allende’s democratically elected government and established military rule under Augusto Pinochet. The regime restricted civil liberties while introducing major market-oriented reforms.",
   },
@@ -40,7 +53,7 @@ export const events = [
     name: "NHS Creation",
     date: "1948",
     color: "#E351A6",
-    image: "/images/events/nhs-creation.jpg",
+    image: nhsCreationImage,
     explanation:
       "The NHS was established in the United Kingdom to provide healthcare free at the point of use. It represented an effort to ensure access to medical treatment based on need rather than personal wealth while maintaining a capitalist economy.",
   },
@@ -49,7 +62,7 @@ export const events = [
     name: "Beveridge Report",
     date: "1942",
     color: "#E351A6",
-    image: "/images/events/beveridge-report.jpg",
+    image: beveridgeReportImage,
     explanation:
       "The Beveridge Report proposed a comprehensive welfare system to address poverty, disease, unemployment, and insecurity. Rather than replacing capitalism, it sought to make it fairer and more inclusive.",
   },
@@ -58,7 +71,7 @@ export const events = [
     name: "Cuban Revolution",
     date: "1959",
     color: "#F2CC50",
-    image: "/images/events/cuban-revolution.jpg",
+    image: cubanRevolutionImage,
     explanation:
       "The Cuban Revolution brought Fidel Castro and his allies to power. The new government introduced land redistribution, universal healthcare, and expanded education as part of a socialist project aimed at reducing inequality.",
   },
@@ -67,7 +80,7 @@ export const events = [
     name: "Prague Spring",
     date: "1968",
     color: "#F27850",
-    image: "/images/events/prague-spring.jpg",
+    image: pragueSpringImage,
     explanation:
       "The Prague Spring was a reform movement in communist Czechoslovakia that sought greater freedom of expression, reduced censorship, and increased political participation.",
   },
@@ -76,7 +89,7 @@ export const events = [
     name: "Thatcherism",
     date: "1980s",
     color: "#634EE9",
-    image: "/images/events/thatcherism.jpg",
+    image: thatcherismImage,
     explanation:
       "Thatcherism refers to economic and political reforms in Britain during the 1980s, including privatization, deregulation, and reductions in the power of trade unions.",
   },
@@ -85,7 +98,7 @@ export const events = [
     name: "Reaganomics",
     date: "1980s",
     color: "#634EE9",
-    image: "/images/events/reaganomics.jpg",
+    image: reaganomicsImage,
     explanation:
       "Reaganomics promoted tax reductions, deregulation, and market-oriented reforms in the United States. These reforms were implemented through federal institutions, legislation, and executive action.",
   },
@@ -94,7 +107,7 @@ export const events = [
     name: "Paris Commune",
     date: "1871",
     color: "#35DDD4",
-    image: "/images/events/paris-commune.jpg",
+    image: parisCommuneImage,
     explanation:
       "The Paris Commune organized local governance through elected councils and participatory institutions. It inspired many anarchists as an example of decentralized and democratic political organization.",
   },
@@ -103,7 +116,7 @@ export const events = [
     name: "End of Apartheid",
     date: "1992",
     color: "#58BE69",
-    image: "/images/events/end-of-apartheid.jpg",
+    image: endOfApartheidImage,
     explanation:
       "The end of apartheid transformed South Africa from a racially segregated political system into a democratic society with universal voting rights, constitutional protections, equal rights, and civil liberties.",
   },
