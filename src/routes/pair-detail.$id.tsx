@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, ChevronRight, Pause, Play } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { discoverPair } from "@/lib/discovery";
 
 import titleShape from "@/assets/pair-detail/title-shape.svg";
 import contentShape from "@/assets/pair-detail/content-shape.svg";
@@ -25,6 +26,9 @@ function PairDetailPage() {
   if (!pair) {
     return <div className="p-8">Pair not found</div>;
   }
+  useEffect(() => {
+  discoverPair(pair.id);
+}, [pair.id]);
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">

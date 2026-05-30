@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Settings, Pencil } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
 import { pairs } from "@/data/pairs";
+import { useEffect, useState } from "react";
+import { getDiscoveredPairs } from "@/lib/discovery";
 
 import pfp from "@/assets/pfp.png";
 import pairIcon from "@/assets/pair-icon.svg";
@@ -9,12 +11,15 @@ import pairIcon from "@/assets/pair-icon.svg";
 export const Route = createFileRoute("/library")({ component: Library });
 
 function Library() {
-  const discoveredPairs = {
-    "capitalism-liberalism": "2026-05-30",
-    "equity-socialism": "2026-05-29",
-  };
+const [discoveredPairs, setDiscoveredPairs] = useState<Record<string, string>>(
+  {}
+);
 
-  const discoveredCount = Object.keys(discoveredPairs).length;
+useEffect(() => {
+  setDiscoveredPairs(getDiscoveredPairs());
+}, []);
+
+const discoveredCount = Object.keys(discoveredPairs).length;
 
   return (
     <div className="min-h-screen pb-24 px-6 pt-12">
@@ -51,8 +56,8 @@ function Library() {
       <div className="grid grid-cols-3 gap-x-3 gap-y-8">
         {pairs.map((pair, index) => {
           const number = index + 1;
-          const discoveredDate =
-            discoveredPairs[pair.id as keyof typeof discoveredPairs];
+          const discoveredDate = discoveredPairs[pair.id];
+        
 
           const isDiscovered = !!discoveredDate;
           const displayColor = isDiscovered ? pair.color : "#6D6D6D";
