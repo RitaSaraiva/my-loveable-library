@@ -1,5 +1,8 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pause, Play } from "lucide-react";
+import { useState } from "react";
+
+import eventMask from "@/assets/event-mask.svg";
 import { getEventById } from "@/data/events";
 
 export const Route = createFileRoute("/event/$id")({
@@ -11,6 +14,7 @@ export const Route = createFileRoute("/event/$id")({
 function EventPage() {
   const { id } = Route.useParams();
   const router = useRouter();
+  const [playing, setPlaying] = useState(false);
 
   const event = getEventById(id);
 
@@ -19,33 +23,67 @@ function EventPage() {
   }
 
   return (
-    <div className="min-h-screen pb-24">
-      <div className="relative">
-        <img
-          src={event.image}
-          alt={event.name}
-          className="w-full h-72 object-cover bg-muted"
-        />
-
+    <div
+      className="min-h-screen pb-24"
+      style={{ backgroundColor: event.color }}
+    >
+      <div className="px-6 pt-12">
         <button
           onClick={() => router.history.back()}
-          className="absolute top-12 left-6 w-10 h-10 rounded-full bg-background/80 backdrop-blur border border-border flex items-center justify-center"
+          className="w-10 h-10 rounded-full border border-black text-black flex items-center justify-center mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
       </div>
 
-      <div className="px-6 py-8">
-        <h1 className="text-3xl serif mb-2">{event.name}</h1>
+      <div
+        className="w-full h-[260px] bg-center bg-cover mb-8"
+        style={{
+          backgroundImage: `url(${event.image})`,
+          maskImage: `url(${eventMask})`,
+          WebkitMaskImage: `url(${eventMask})`,
+          maskSize: "cover",
+          WebkitMaskSize: "cover",
+          maskRepeat: "no-repeat",
+          WebkitMaskRepeat: "no-repeat",
+          maskPosition: "center",
+          WebkitMaskPosition: "center",
+        }}
+      />
 
-        <p
-          className="text-xs tracking-widest uppercase mb-6"
-          style={{ color: event.color }}
-        >
+      <div className="px-6">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="inline-flex bg-black text-[#F9F6EC] rounded-full px-4 py-1 text-xs uppercase tracking-widest">
+            Event
+          </span>
+
+          <button
+            onClick={() => setPlaying((value) => !value)}
+            className="w-10 h-10 rounded-full flex items-center justify-center"
+            style={{
+              backgroundColor: playing ? "#000000" : "transparent",
+              border: playing ? "none" : "2px solid #000000",
+              color: playing ? event.color : "#000000",
+            }}
+            aria-label={playing ? "Pause audio" : "Play audio"}
+          >
+            {playing ? (
+              <Pause className="h-4 w-4" fill="currentColor" />
+            ) : (
+              <Play className="h-5 w-5 ml-0.5" fill="currentColor" />
+            )}
+          </button>
+        </div>
+
+        <h1 className="text-5xl serif leading-none text-black mb-4 max-w-[320px]">
+          {event.name}
+        </h1>
+
+        <p className="text-left text-lg text-black/70 mb-8">
           {event.date}
         </p>
 
-        <p className="text-sm leading-relaxed text-muted-foreground">
+        <p className="text-lg leading-relaxed text-black/75">
           {event.explanation}
         </p>
       </div>
