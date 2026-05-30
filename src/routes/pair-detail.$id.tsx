@@ -48,13 +48,13 @@ function PairDetailPage() {
           <div className="relative z-10 px-6 pt-11">
             <button
               onClick={() => router.history.back()}
-              className="w-10 h-10 rounded-full border border-[#F9F6EC] text-[#F9F6EC] flex items-center justify-center mb-3"
+              className="w-10 h-10 rounded-full border border-[#F9F6EC] text-[#F9F6EC] flex items-center justify-center mb-5"
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
 
             <div className="flex items-start justify-between gap-10">
-              <h1 className="text-5xl serif leading-none text-[#F9F6EC] max-w-[210px]">
+              <h1 className="text-[2.3rem] serif leading-none text-[#F9F6EC] max-w-[290px]">
                 {pair.title}
               </h1>
 
@@ -79,7 +79,7 @@ function PairDetailPage() {
         </div>
 
         <div className="px-8 pt-8 pb-16">
-          <p className="serif text-2xl leading-snug text-black">
+          <p className="serif text-[1.95rem] leading-snug text-black">
             {pair.explanation}
           </p>
         </div>
