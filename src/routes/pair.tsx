@@ -27,7 +27,7 @@ function PairFlow() {
   const [selected, setSelected] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const concept = getConceptById("liberalism");
+  const concept = getConceptById("capitalism");
 
   if (!concept) return <div className="p-8">Concept not found</div>;
 

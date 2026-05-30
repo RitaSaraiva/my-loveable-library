@@ -61,10 +61,12 @@ export function TornShape({
       )}
 
       {label && (
-        <div className="absolute inset-0 flex items-center justify-center text-black text-[10px] font-bold tracking-wider uppercase serif text-center px-3 leading-tight">
-          {label}
-        </div>
-      )}
+  <div className="absolute inset-0 flex items-center justify-center px-5">
+    <span className="text-black text-[13px] font-semibold tracking-wide uppercase text-center leading-tight max-w-[80%] break-words">
+      {label}
+    </span>
+  </div>
+)}
     </div>
   );
 }
