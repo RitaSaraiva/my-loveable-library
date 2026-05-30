@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Settings, Pencil } from "lucide-react";
+import { Settings, Pencil, X } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
 import { pairs } from "@/data/pairs";
 import { useEffect, useState } from "react";
@@ -11,23 +11,59 @@ import pairIcon from "@/assets/pair-icon.svg";
 export const Route = createFileRoute("/library")({ component: Library });
 
 function Library() {
-const [discoveredPairs, setDiscoveredPairs] = useState<Record<string, string>>(
-  {}
-);
+  const [discoveredPairs, setDiscoveredPairs] = useState<Record<string, string>>({});
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
-useEffect(() => {
-  setDiscoveredPairs(getDiscoveredPairs());
-}, []);
+  useEffect(() => {
+    setDiscoveredPairs(getDiscoveredPairs());
+  }, []);
 
-const discoveredCount = Object.keys(discoveredPairs).length;
+  const discoveredCount = Object.keys(discoveredPairs).length;
+
+  function resetDiscoveredPairs() {
+    localStorage.removeItem("discoveredPairs");
+    setDiscoveredPairs({});
+    setSettingsOpen(false);
+  }
 
   return (
-    <div className="min-h-screen pb-24 px-6 pt-12">
+    <div className="min-h-screen pb-24 px-6 pt-12 relative">
       <div className="flex justify-end mb-4">
-        <button className="w-10 h-10 rounded-full border border-[#F9F6EC] text-[#F9F6EC] flex items-center justify-center">
+        <button
+          onClick={() => setSettingsOpen(true)}
+          className="w-10 h-10 rounded-full border border-[#F9F6EC] text-[#F9F6EC] flex items-center justify-center"
+        >
           <Settings className="h-4 w-4" />
         </button>
       </div>
+
+      {settingsOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-6">
+          <div className="w-full max-w-sm bg-background border border-[#F9F6EC]/30 rounded-3xl px-6 pt-6 pb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="serif text-3xl text-[#F9F6EC]">Settings</h2>
+
+              <button
+                onClick={() => setSettingsOpen(false)}
+                className="w-9 h-9 rounded-full border border-[#F9F6EC] text-[#F9F6EC] flex items-center justify-center"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <p className="text-sm text-muted-foreground mb-6">
+              Use this before a new visitor starts the experience.
+            </p>
+
+            <button
+              onClick={resetDiscoveredPairs}
+              className="w-full py-4 rounded-full bg-[#F9F6EC] text-black text-xs uppercase tracking-widest font-semibold"
+            >
+              Reset discovered pairs
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col items-center mb-10">
         <div className="relative">
@@ -57,7 +93,6 @@ const discoveredCount = Object.keys(discoveredPairs).length;
         {pairs.map((pair, index) => {
           const number = index + 1;
           const discoveredDate = discoveredPairs[pair.id];
-        
 
           const isDiscovered = !!discoveredDate;
           const displayColor = isDiscovered ? pair.color : "#6D6D6D";
@@ -133,3 +168,4 @@ const discoveredCount = Object.keys(discoveredPairs).length;
     </div>
   );
 }
+
