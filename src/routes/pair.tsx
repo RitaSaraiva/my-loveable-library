@@ -8,7 +8,11 @@ import loaderSvg from "@/assets/loader.svg";
 
 import { BottomNav } from "@/components/BottomNav";
 import { Blob, TornShape } from "@/components/TornShape";
-import { concepts as allConcepts, getConceptById } from "@/data/concepts";
+import {
+  concepts as allConcepts,
+  getConceptById,
+  getConceptByUid,
+} from "@/data/concepts";
 import { getPairByConcepts } from "@/data/pairs";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
@@ -22,9 +26,58 @@ type Concept = (typeof allConcepts)[number];
 function PairFlow() {
   const [stage, setStage] = useState<Stage>("listening");
   const [selected, setSelected] = useState<string | null>(null);
+  const [arduinoConnected, setArduinoConnected] = useState(false);
+  const [scannedConceptId, setScannedConceptId] = useState<string | null>(null);
+
   const navigate = useNavigate();
 
-  const concept = getConceptById("capitalism");
+  async function connectArduino() {
+    try {
+      const port = await (navigator as any).serial.requestPort();
+      await port.open({ baudRate: 9600 });
+
+      setArduinoConnected(true);
+
+      const decoder = new TextDecoderStream();
+      port.readable.pipeTo(decoder.writable);
+
+      const reader = decoder.readable.getReader();
+      let buffer = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        if (!value) continue;
+
+        buffer += value;
+
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+
+        for (const line of lines) {
+          const cleanLine = line.trim();
+          console.log("SERIAL:", cleanLine);
+
+          if (cleanLine.startsWith("TAG:")) {
+            const uid = cleanLine.replace("TAG:", "").trim();
+            const scannedConcept = getConceptByUid(uid);
+
+            if (scannedConcept) {
+              setScannedConceptId(scannedConcept.id);
+              setSelected(null);
+              setStage("detected");
+            } else {
+              console.log("Unknown UID:", uid);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Arduino connection failed:", error);
+    }
+  }
+
+  const concept = getConceptById(scannedConceptId ?? "capitalism");
 
   if (!concept) return <div className="p-8">Concept not found</div>;
 
@@ -59,7 +112,11 @@ function PairFlow() {
   return (
     <div className="min-h-screen pb-24 px-6 pt-22 relative">
       {stage === "listening" && (
-        <ListeningScreen onDetect={() => setStage("detected")} />
+        <ListeningScreen
+          onDetect={() => setStage("detected")}
+          onConnectArduino={connectArduino}
+          arduinoConnected={arduinoConnected}
+        />
       )}
 
       {stage !== "listening" && (
@@ -126,7 +183,15 @@ function PairFlow() {
   );
 }
 
-function ListeningScreen({ onDetect }: { onDetect: () => void }) {
+function ListeningScreen({
+  onDetect,
+  onConnectArduino,
+  arduinoConnected,
+}: {
+  onDetect: () => void;
+  onConnectArduino: () => void;
+  arduinoConnected: boolean;
+}) {
   return (
     <div className="min-h-[80vh] flex flex-col">
       <h1 className="text-5xl serif mb-3">Listening...</h1>
@@ -142,6 +207,13 @@ function ListeningScreen({ onDetect }: { onDetect: () => void }) {
       >
         <ListeningPentagon />
       </button>
+
+      <button
+        onClick={onConnectArduino}
+        className="mt-8 mx-auto border border-[#F9F6EC] text-[#F9F6EC] rounded-full px-4 py-2 text-xs tracking-widest uppercase"
+      >
+        {arduinoConnected ? "Arduino connected" : "Connect Arduino"}
+      </button>
     </div>
   );
 }
@@ -149,64 +221,31 @@ function ListeningScreen({ onDetect }: { onDetect: () => void }) {
 function ListeningPentagon() {
   return (
     <div className="relative w-full h-full">
-
-      {/* ROTATING PENTAGON */}
       <div
-  className="absolute inset-0 animate-loader-color"
-  style={{
-    backgroundColor: "#79B8EC",
-    maskImage: `url(${loaderSvg})`,
-    WebkitMaskImage: `url(${loaderSvg})`,
-    maskSize: "contain",
-    WebkitMaskSize: "contain",
-    maskRepeat: "no-repeat",
-    WebkitMaskRepeat: "no-repeat",
-    maskPosition: "center",
-    WebkitMaskPosition: "center",
-  }}
-/>
+        className="absolute inset-0 animate-loader-color"
+        style={{
+          backgroundColor: "#79B8EC",
+          maskImage: `url(${loaderSvg})`,
+          WebkitMaskImage: `url(${loaderSvg})`,
+          maskSize: "contain",
+          WebkitMaskSize: "contain",
+          maskRepeat: "no-repeat",
+          WebkitMaskRepeat: "no-repeat",
+          maskPosition: "center",
+          WebkitMaskPosition: "center",
+        }}
+      />
 
-      {/* STATIC STROKES */}
       <svg
         viewBox="0 0 100 100"
         className="absolute inset-0 w-full h-full pointer-events-none"
       >
         <g stroke="black" strokeWidth="5" strokeLinecap="round" fill="none">
-          <line
-            x1="28"
-            y1="48"
-            x2="28"
-            y2="58"
-            className="listening-stroke listening-stroke-1"
-          />
-          <line
-            x1="40"
-            y1="38"
-            x2="40"
-            y2="68"
-            className="listening-stroke listening-stroke-2"
-          />
-          <line
-            x1="52"
-            y1="44"
-            x2="52"
-            y2="62"
-            className="listening-stroke listening-stroke-3"
-          />
-          <line
-            x1="64"
-            y1="32"
-            x2="64"
-            y2="74"
-            className="listening-stroke listening-stroke-4"
-          />
-          <line
-            x1="76"
-            y1="48"
-            x2="76"
-            y2="58"
-            className="listening-stroke listening-stroke-5"
-          />
+          <line x1="28" y1="48" x2="28" y2="58" className="listening-stroke listening-stroke-1" />
+          <line x1="40" y1="38" x2="40" y2="68" className="listening-stroke listening-stroke-2" />
+          <line x1="52" y1="44" x2="52" y2="62" className="listening-stroke listening-stroke-3" />
+          <line x1="64" y1="32" x2="64" y2="74" className="listening-stroke listening-stroke-4" />
+          <line x1="76" y1="48" x2="76" y2="58" className="listening-stroke listening-stroke-5" />
         </g>
       </svg>
     </div>
@@ -323,11 +362,7 @@ function ConnectScreen({
                 }}
               >
                 {isSelected ? (
-                  <TornShape
-                    color={option.color}
-                    size={160}
-                    label={option.label}
-                  />
+                  <TornShape color={option.color} size={160} label={option.label} />
                 ) : (
                   <Blob color={option.color} size={62} />
                 )}
