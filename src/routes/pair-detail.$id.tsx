@@ -85,18 +85,19 @@ function PairDetailPage() {
         </div>
       </section>
 
-      <section className="relative -mt-6 min-h-[620px] pb-24">
-        <img
-          src={contentShape}
-          alt=""
-          className="absolute pointer-events-none select-none z-0"
-          style={{
-            width: "130%",
-            height: "120%",
-            left: "-5%",
-            top: "-6%",
-          }}
-        />
+      <section className="relative -mt-6 min-h-[620px] pb-24 bg-background overflow-visible">
+  <img
+    src={contentShape}
+    alt=""
+    className="absolute pointer-events-none select-none z-0"
+    style={{
+      width: "150%",
+      height: "100%",
+      left: "-25%",
+      top: "-6%",
+      objectFit: "fill",
+    }}
+  />
 
         <div className="relative z-10 px-6 pt-16">
           <h2 className="serif text-2xl mb-4 flex items-center gap-2 text-[#F9F6EC]">
