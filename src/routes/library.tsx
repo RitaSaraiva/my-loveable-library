@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Settings, Pencil } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
-import { TornShape } from "@/components/TornShape";
 import { pairs } from "@/data/pairs";
+
+import pfp from "@/assets/pfp.png";
+import pairIcon from "@/assets/pair-icon.svg";
 
 export const Route = createFileRoute("/library")({ component: Library });
 
@@ -17,7 +19,7 @@ function Library() {
   return (
     <div className="min-h-screen pb-24 px-6 pt-12">
       <div className="flex justify-end mb-4">
-        <button className="w-10 h-10 rounded-full border border-border flex items-center justify-center">
+        <button className="w-10 h-10 rounded-full border border-[#F9F6EC] text-[#F9F6EC] flex items-center justify-center">
           <Settings className="h-4 w-4" />
         </button>
       </div>
@@ -25,11 +27,12 @@ function Library() {
       <div className="flex flex-col items-center mb-10">
         <div className="relative">
           <img
-            src="https://images.unsplash.com/photo-1591622180780-c9b8a8c43056?w=200"
+            src={pfp}
             alt="Profile"
-            className="w-28 h-28 rounded-full object-cover border border-border"
+            className="w-28 h-28 rounded-full object-cover border border-[#F9F6EC]"
           />
-          <button className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-background border border-border flex items-center justify-center">
+
+          <button className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-transparent border border-[#F9F6EC] text-[#F9F6EC] flex items-center justify-center">
             <Pencil className="h-3 w-3" />
           </button>
         </div>
@@ -57,16 +60,26 @@ function Library() {
           const CardContent = (
             <>
               <div className="relative h-16 w-full flex items-center">
-                <div className="absolute left-0 top-0">
-                  <TornShape color={displayColor} size={56} />
-                </div>
+                <div
+                  className="relative w-[76px] h-[56px]"
+                  style={{
+                    backgroundColor: displayColor,
+                    maskImage: `url(${pairIcon})`,
+                    WebkitMaskImage: `url(${pairIcon})`,
+                    maskSize: "contain",
+                    WebkitMaskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskPosition: "center",
+                  }}
+                />
 
-                <div className="absolute left-8 top-2">
-                  <TornShape
-                    color={displayColor}
-                    size={56}
-                    number={number}
-                  />
+                <div
+                  className="absolute left-[43px] top-[18px] text-xs font-bold"
+                  style={{ color: displayColor }}
+                >
+                  {number}
                 </div>
               </div>
 
@@ -104,10 +117,7 @@ function Library() {
               {CardContent}
             </Link>
           ) : (
-            <div
-              key={pair.id}
-              className="flex flex-col items-start opacity-80"
-            >
+            <div key={pair.id} className="flex flex-col items-start opacity-80">
               {CardContent}
             </div>
           );
