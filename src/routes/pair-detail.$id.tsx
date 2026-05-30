@@ -78,8 +78,8 @@ function PairDetailPage() {
           </div>
         </div>
 
-        <div className="px-8 pt-8 pb-16">
-          <p className="serif text-[1.95rem] leading-snug text-black">
+        <div className="px-8 pt-1 pb-18 -mt-8">
+          <p className="serif text-[1.9rem] leading-snug text-black">
             {pair.explanation}
           </p>
         </div>
@@ -99,7 +99,7 @@ function PairDetailPage() {
     }}
   />
 
-        <div className="relative z-10 px-6 pt-16">
+        <div className="relative z-10 px-6 pt-12">
           <h2 className="serif text-2xl mb-4 flex items-center gap-2 text-[#F9F6EC]">
             People <ChevronRight className="h-5 w-5" />
           </h2>
