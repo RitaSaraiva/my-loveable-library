@@ -27,7 +27,7 @@ function PairFlow() {
   const [selected, setSelected] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const concept = getConceptById("capitalism");
+  const concept = getConceptById("liberalism");
 
   if (!concept) return <div className="p-8">Concept not found</div>;
 
@@ -274,7 +274,7 @@ function ConnectScreen({
                 }}
               >
                 {isSelected ? (
-                  <TornShape color={option.color} size={150} label={option.label} />
+                  <TornShape color={option.color} size={160} label={option.label} />
                 ) : (
                   <Blob color={option.color} size={62} />
                 )}
