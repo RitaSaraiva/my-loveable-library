@@ -4,6 +4,12 @@ import { useState } from "react";
 
 import personMask from "@/assets/people-mask.svg";
 import { getPersonById } from "@/data/people";
+import {
+  playPersonAudio,
+  pauseAudio,
+  resumeAudio,
+  getCurrentAudio,
+} from "@/lib/audio";
 
 export const Route = createFileRoute("/person/$id")({
   component: PersonPage,
@@ -20,6 +26,26 @@ function PersonPage() {
 
   if (!person) {
     return <div className="p-8">Person not found</div>;
+  }
+
+  const personId = person.id;
+
+  function handleAudioClick() {
+    const audio = getCurrentAudio();
+
+    if (playing) {
+      pauseAudio();
+      setPlaying(false);
+      return;
+    }
+
+    if (!audio || audio.ended) {
+      playPersonAudio(personId);
+    } else {
+      resumeAudio();
+    }
+
+    setPlaying(true);
   }
 
   return (
@@ -56,7 +82,7 @@ function PersonPage() {
         </span>
 
         <button
-          onClick={() => setPlaying((value) => !value)}
+          onClick={handleAudioClick}
           className="w-10 h-10 rounded-full flex items-center justify-center"
           style={{
             backgroundColor: playing ? "#000000" : "transparent",
@@ -77,9 +103,7 @@ function PersonPage() {
         {person.name}
       </h1>
 
-      <p className="text-left text-lg text-black/80 mb-8">
-        {person.role}
-      </p>
+      <p className="text-left text-lg text-black/80 mb-8">{person.role}</p>
 
       <p className="text-lg leading-relaxed text-black/85">
         {person.explanation}

@@ -64,3 +64,11 @@ export function playPairAudio(pairId: string) {
 export function playScanAnotherConceptAudio() {
   return playAudio(`/audio/system/scan-another-concept.mp3`);
 }
+
+export function playPersonAudio(personId: string) {
+  return playAudio(`/audio/people/${personId}.mp3`);
+}
+
+export function playEventAudio(eventId: string) {
+  return playAudio(`/audio/events/${eventId}.mp3`);
+}

@@ -4,6 +4,12 @@ import { useState } from "react";
 
 import eventMask from "@/assets/event-mask.svg";
 import { getEventById } from "@/data/events";
+import {
+  playEventAudio,
+  pauseAudio,
+  resumeAudio,
+  getCurrentAudio,
+} from "@/lib/audio";
 
 export const Route = createFileRoute("/event/$id")({
   component: EventPage,
@@ -20,6 +26,26 @@ function EventPage() {
 
   if (!event) {
     return <div className="p-8">Event not found</div>;
+  }
+
+  const eventId = event.id;
+
+  function handleAudioClick() {
+    const audio = getCurrentAudio();
+
+    if (playing) {
+      pauseAudio();
+      setPlaying(false);
+      return;
+    }
+
+    if (!audio || audio.ended) {
+      playEventAudio(eventId);
+    } else {
+      resumeAudio();
+    }
+
+    setPlaying(true);
   }
 
   return (
@@ -58,7 +84,7 @@ function EventPage() {
           </span>
 
           <button
-            onClick={() => setPlaying((value) => !value)}
+            onClick={handleAudioClick}
             className="w-10 h-10 rounded-full flex items-center justify-center"
             style={{
               backgroundColor: playing ? "#000000" : "transparent",
@@ -79,9 +105,7 @@ function EventPage() {
           {event.name}
         </h1>
 
-        <p className="text-left text-lg text-black/70 mb-8">
-          {event.date}
-        </p>
+        <p className="text-left text-lg text-black/70 mb-8">{event.date}</p>
 
         <p className="text-lg leading-relaxed text-black/75">
           {event.explanation}
